@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head th:replace="_layouts/head :: head">
+    </head>
+</head>
+<body>
+<div class="login-content">
+    <div class="login-box flipped">
+        <form class="forget-form" id="forget_pass_form" method="post">
+            <h3 class="login-head"><i class="fa fa-lg fa-fw fa-lock"></i>Forgot Password ?</h3>
+            <div class="form-group">
+                <input class="form-control" name="code" id="code" type="text" placeholder="Code">
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="newPassword" name="newPassword" type="text" placeholder="New_Password">
+            </div>
+            <input th:value="${user.contact[0].address}" type="hidden" id="email" >
+            <div class="form-group btn-container">
+                <button type="submit" class="btn btn-primary btn-block">SET</button>
+            </div>
+
+            <div class="form-group mt-3">
+                <p class="semibold-text mb-0"><a href="no-script.html" id="send_code" data-toggle="flip"><i class="fa fa-angle-left fa-fw"></i>Send Code Again</a></p>
+            </div>
+
+        </form>
+
+
+
+    </div>
+</div>
+
+<section th:replace="_layouts/bottom :: bottom"></section>
+</body>
+</html>

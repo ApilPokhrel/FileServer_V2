@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="_layouts/head :: head">
+</head>
+<style>
+    .error {
+        color: darkred;
+    }
+</style>
+<body class="app sidebar-mini rtl">
+<!-- Navbar-->
+<header th:replace="_layouts/header :: header">
+</header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:replace="_layouts/sidebar :: sidebar">
+</aside>
+<main class="app-content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="tile">
+                <input type="hidden" id="user_id">
+                <h3 class="tile-title">User Detail</h3>
+                <div class="tile-body">
+                    <form role="form" action="#" method="post" id="user_update_admin" >
+                        <div class="form-group">
+                            <label class="control-label">Name:</label>
+                            <input class="form-control" type="text"  id="user_name" name="name">
+
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">Plans:</label>
+
+                            <select class="form-control" id="plan" name="plan"
+                                    style="width: 100%;">
+                            </select>
+
+                            <small>Plan Change</small>
+
+                        </div>
+
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">Email:</label>
+                            <input class="form-control" type="text"   name="email" id="user_email">
+
+                        </div>
+
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">Phone:</label>
+                            <input class="form-control" type="text" id="user_phone" name="phone">
+
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">Role:</label>
+                            <input class="form-control" type="text" id="user_role" name="role">
+
+                        </div>
+
+
+                        <div class="tile-footer">
+                            <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Save</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tile">
+                <div class="tile-title-w-btn">
+                    <h3 class="title">Buckets</h3>
+                </div>
+                <div class="tile-body">
+                    <table class="table table-hover table-bordered" id="userBucketTable">
+                        <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Name</th>
+                            <th>requests</th>
+                            <th>files</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Essential javascripts for application to work-->
+<section th:replace="_layouts/bottom :: bottom"></section>
+<script>
+
+
+    let updateUserAdmin = (form, id)=>{
+         console.log("id", id);
+        $.ajax({
+            url: `/api/v1/user/admin/${id}`,
+            method: 'PATCH',
+            headers: { access_token: $.cookie("access_token") },
+            data: core.form.get(`#${form}`)
+        }).done(d=>{
+
+            alert(d);
+            window.location.href = "?";
+        }).fail(e=>alert(e.responseText))
+    }
+
+
+    $('#user_update_admin').on("submit",function (event) {
+        event.preventDefault();
+        updateUserAdmin('user_update_admin', $('#user_id').val());
+    });
+
+
+    let changeBucketStatus = (bucket, status)=>{
+        if(!status || (status == "active")){
+            status = "inactive";
+        } else{
+            status = "active";
+        }
+        $.ajax({
+            url:`/api/v1/bucket/?bucketName=${bucket}&updateField=status&updateValue=${status}&updateType=set`,
+            headers:{access_token: $.cookie("access_token")},
+            method: 'patch',
+        }).done(d => {
+            if(d){
+                swal("Bucket Status \n"+ d.status);
+            }
+        }).fail(e =>{
+            swal(`Error \n ${e.responseText}`);
+        })
+    }
+
+    function setUserAdminDetail(id) {
+        $.ajax({
+            url: '/api/v1/user/'+id,
+            headers: { access_token: $.cookie("access_token") },
+            method: 'get'
+        }).done(d=>{
+            if(d.id) {
+                $('#user_name').val(d.name.user);
+                $('#user_email').val(d.contact[0].address);
+                if(d.contact[1]) {
+                    $('#user_phone').val(d.contact[1].address);
+                }
+                $("#user_id").val(d.id);
+                $('#user_role').val(d.role.role);
+                setUserBucketTable(d.buckets);
+                setPlans(d.extras.plan);
+
+            }
+        }).fail(e=>console.log((e.responseText)));
+    }
+
+    let setUserBucketTable = (data)=> {
+        $("#userBucketTable").DataTable({
+            pageLength: 25,
+            processing: true,
+            responsive: true,
+            filter: true,
+            sort: false,
+            data,
+            columns: [
+                {
+                    data: {},
+                    render: function (data, type, full) {
+                        return index++;
+                    }
+                },
+                {
+                    data: "name",
+
+                },
+                {
+                    data: "requests",
+                    render: function (requests) {
+                        return (requests) ? requests.length : 0;
+                    }
+
+                },
+                {
+                    data: "files",
+                    render: function (files) {
+                        return (files) ? files.length : 0;
+                    }
+
+                },
+
+                {
+                    data: null,
+                    render: function (data) {
+                        if (!data.status || (data.status == "active")) {
+                            return `
+                        <input type="checkbox" class="checkbox" id="status" checked name="status" value="active" onclick="changeBucketStatus('${data.name}', '${data.status}')">
+                     `;
+                        } else {
+
+                            return `
+                        <input type="checkbox" class="checkbox" id="status"  name="status" value="inactive" onclick="changeBucketStatus('${data.name}', '${data.status}')">
+                        `;
+                        }
+                    }
+
+                },
+
+                {
+                    data: null,
+                    render: function (data) {
+                        return `<a href="/bucket/edit/${data.id}" class="btn btn-white btn-sm" ><i class="fa fa-edit"></i></a>`;
+                    }
+                }
+            ]
+        });
+    }
+    let setPlans = (plan)=>{
+        $.ajax({
+            url: '/api/v1/settings/plan',
+            headers: { access_token: $.cookie("access_token") },
+            method: 'get'
+        }).done(d=>{
+            let planHtml;
+            if(plan == "free") {
+                planHtml = `<option value="free" selected >free</option> `;
+            }else{
+                planHtml = `<option value="free">free</option> `;
+            }
+            if(d) {
+                planHtml += d.map(p=>{
+                    if(p.id == plan) {
+                        return `<option  selected value="${p.id}" >${p.name}</option>`;
+                    }else{
+                        return `<option value="${p.id}">${p.name}</option>`;
+                    }
+
+                }).join("");
+            }
+            console.log(planHtml)
+            $('#plan').html(planHtml);
+        }).fail(e=>console.log(e.responseText))
+    }
+
+    console.log("location us ",window.location.pathname.split("/")[2])
+    setUserAdminDetail(window.location.pathname.split("/")[3])
+</script>
+</body>
+</html>

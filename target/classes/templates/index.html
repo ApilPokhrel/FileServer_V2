@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="_layouts/head :: head">
+</head>
+<body class="app sidebar-mini rtl">
+<!-- Navbar-->
+<header th:replace="_layouts/header :: header">
+</header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:replace="_layouts/sidebar :: sidebar">
+</aside>
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h1><i class="fa fa-dashboard"></i> Dashboard</h1>
+            <p></p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small primary coloured-icon"><i class="icon fa fa-cloud fa-3x"></i>
+                <div class="info">
+                    <h4>Buckets</h4>
+                    <p><b id="total_buckets"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small info coloured-icon"><i class="icon fa fa-wifi fa-3x"></i>
+                <div class="info">
+                    <h4>Requests</h4>
+                    <p><b id="total_request"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small warning coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
+                <div class="info">
+                    <h4>Uploades</h4>
+                    <p><b id="total_files"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="widget-small danger coloured-icon"><i class="icon fa fa-archive fa-3x"></i>
+                <div class="info">
+                    <h4>Backup Files</h4>
+                    <p><b id="total_backups"></b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Request Traffics</h3>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <canvas class="embed-responsive-item" id="requestChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Storage Used</h3>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <canvas class="embed-responsive-item" id="total_size"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+<!-- Essential javascripts for application to work-->
+<section th:replace="_layouts/bottom :: bottom"></section>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="_layouts/head :: head">
+</head>
+<style>
+    .error {
+        color: darkred;
+    }
+</style>
+<body class="app sidebar-mini rtl">
+<!-- Navbar-->
+<header th:replace="_layouts/header :: header">
+</header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:replace="_layouts/sidebar :: sidebar">
+</aside>
+<main class="app-content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Create Bucket</h3>
+                <div class="tile-body">
+                    <form role="form" action="#" id="bucket_create" >
+                        <div class="form-group">
+                            <label class="control-label">Name:</label>
+                            <input class="form-control" type="text" placeholder="Enter bucket name" name="name">
+                            <small>name of bucket should be unique  and lowercase</small>
+                            <br>
+
+                            <br>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">Add Owner:</label>
+
+                                <select class="form-control tokenizer" id="add_owner" name="owners"
+                                        style="width: 100%;"
+                                        multiple="multiple">
+
+                                </select>
+
+                            <small>if u want allow other users to access this bucket add key of user</small>
+
+                        </div>
+                        <hr>
+
+                        <div class="form-group">
+                            <label class="control-label">Methods Allowed:</label>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_methods" value="get"><span class="label-text">GET</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_methods" value="post"><span class="label-text">POST</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_methods" value="delete"><span class="label-text">DELETE</span>
+                                </label>
+                            </div>
+
+                            <small>[GET, POST, DELETE]</small>
+                            <br>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">File Allowed:</label>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_file_type" value="image"><span class="label-text">IMAGE</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_file_type" value="video"><span class="label-text">VIDEO</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_file_type" value="document"><span class="label-text">DOCUMENT</span>
+                                </label>
+                            </div>
+
+                            <small>Web files [html, css, js] are not allowed</small>
+                            <br>
+
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="exampleSelect1">Allowed Data</label>
+                            <select class="form-control" id="exampleSelect1" name="threshold">
+                                <option type="number" value="1">up to 1GB</option>
+                                <option value="10">up to 10GB</option>
+                                <option value="100">up to 100GB</option>
+                                <option value="100">up to 1000GB</option>
+                                <option value="0">Infinite</option>
+                            </select>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                  By creating bucket you accept the terms and conditions of Bucket policy
+                                </label>
+                            </div>
+                        </div>
+                        <div class="tile-footer">
+                            <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Create</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Notice</h3>
+                <div class="tile-body">
+                    //Notes here
+                </div>
+                <div class="tile-footer">
+                    <div class="row">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Essential javascripts for application to work-->
+<section th:replace="_layouts/bottom :: bottom"></section>
+<script src="/js/app/bucket.js"></script>
+
+</body>
+</html>

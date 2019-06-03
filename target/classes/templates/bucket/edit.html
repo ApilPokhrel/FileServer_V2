@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="_layouts/head :: head">
+
+<body class="app sidebar-mini rtl">
+<header th:replace="_layouts/header :: header">
+</header>
+
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:replace="_layouts/sidebar :: sidebar">
+</aside>
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h1 id="bucket_name_title" th:text="${bucket.name}">Bucket Name</h1>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+            <li class="breadcrumb-item">Buckets</li>
+            <li class="breadcrumb-item active"><a href="#" th:text="${bucket.name}"></a></li>
+        </ul>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Bucket Detail</h3>
+                <div class="tile-body">
+                    <form role="form" action="#" method="post" id="frmAdminBucket" >
+                        <div class="form-group">
+                            <label class="control-label">Name:</label>
+                            <input class="form-control" th:value="${bucket.name}"  type="text" placeholder="Enter bucket name" name="name">
+                            <small>name cannot be edited</small>
+                            <br>
+
+                            <br>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label class="control-label">Owners:</label>
+
+                            <select class="form-control tokenizer" id="add_owner_edit" name="owners"
+                                    style="width: 100%;"
+                                    multiple="multiple">
+                            </select>
+
+                            <small>if u want allow other users to access this bucket add key of user</small>
+
+                        </div>
+                        <hr>
+
+                        <div class="form-group" id="allowed_methods">
+                            <label class="control-label">Methods Allowed:</label>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_methods" value="get" id="get"><span class="label-text">GET</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_methods" value="post" id="post"><span class="label-text">POST</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" name="allowed_methods" value="delete" id="delete"><span class="label-text">DELETE</span>
+                                </label>
+                            </div>
+
+                            <small>[GET, POST, DELETE]</small>
+                            <br>
+                        </div>
+                        <hr>
+                        <div class="form-group" id="allowed_file_type">
+                            <label class="control-label">File Allowed:</label>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" id="image" name="allowed_file_type" value="image"><span class="label-text">IMAGE</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" id="video" name="allowed_file_type" value="video"><span class="label-text">VIDEO</span>
+                                </label>
+                            </div>
+                            <div class="animated-checkbox">
+                                <label>
+                                    <input type="checkbox" class="checkbox" id="document" name="allowed_file_type" value="document"><span class="label-text">DOCUMENT</span>
+                                </label>
+                            </div>
+
+                            <small>Web files [html, css, js] are not allowed</small>
+                            <br>
+
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="exampleSelect1">Allowed Data</label>
+                            <select class="form-control" id="exampleSelect1" name="threshold">
+                                <option type="number" id="1" value="1">up to 1GB</option>
+                                <option id="10" value="10">up to 10GB</option>
+                                <option id="100" value="100">up to 100GB</option>
+                                <option id="1000" value="100">up to 1000GB</option>
+                                <option id="0" value="0">Infinite</option>
+                            </select>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    By creating bucket you accept the terms and conditions of Bucket policy
+                                </label>
+                            </div>
+                        </div>
+                        <div class="tile-footer">
+                            <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Edit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Bucket Storage (gb)</h3>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <canvas class="embed-responsive-item" id="bucketThresholdStat"></canvas>
+                </div>
+            </div>
+
+            <div class="tile">
+                <h3 class="tile-title">Request Traffics</h3>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <canvas class="embed-responsive-item" id="requestChartBucket"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+<!-- Essential javascripts for application to work-->
+<section th:replace="_layouts/bottom :: bottom"></section>
+<script>
+    $(document).on("submit", "#frmAdminBucket", function (event) {
+        event.preventDefault();
+        updateBucketAdmin("frmAdminBucket");
+    });
+
+    let setBucketEditAdmin = (bucket)=>{
+        bucket = $('#bucket_name_title').text();
+        if(bucket) {
+            $.ajax({
+                url: `/api/v1/bucket/admin/${bucket}`,
+                headers: {access_token: $.cookie("access_token")},
+                method: "GET"
+            }).done(d => {
+                 console.log(d);
+                for (var o of d.owners) {
+                    if(o.trim()) {
+                        $("#add_owner_edit").append(`<option value="${o}" selected="selected" >${o}</option>`);
+                    }
+                }
+                $("#add_owner_edit").select2({
+                    tags: true,
+                    tokenSeparators: [',', ' ']
+                })
+                for (var m of d.allowed_methods) {
+                    if (m == "get") {
+                        $('#allowed_methods #get').prop('checked', true);
+                    }
+                    if (m == "post") {
+                        $('#allowed_methods #post').prop('checked', true);
+                    }
+                    if (m == "delete") {
+                        $('#allowed_methods #delete').prop('checked', true);
+                    }
+                }
+                for (var t of d.allowed_file_type) {
+                    if (t == "image") {
+                        $('#allowed_file_type #image').prop('checked', true);
+                    }
+                    if (t == "video") {
+                        $('#allowed_file_type #video').prop('checked', true);
+                    }
+                    if (t == "document") {
+                        $('#allowed_file_type #document').prop('checked', true);
+                    }
+                }
+
+                $(`#exampleSelect1 #${d.threshold}`).attr('selected', 'selected');
+                thresholdChart(d);
+                setTotalRequestBucket(d);
+            }).fail(e => {
+                let error;
+                if (e.responseText) error = e.responseText;
+                if (e.responseJSON) error = e.responseJSON;
+
+                swal({
+                    title: "Bucket Load Failed",
+                    html: true,
+                    text: error,
+                    icon: "error",
+                });
+            })
+        }
+    }
+
+
+    setBucketEditAdmin();
+
+    function updateBucketAdmin(form){
+
+        let owners =$('[name=owners]').val();
+        let allowed_file_type = [];
+        $(`input:checkbox[name=allowed_file_type]:checked`).each(function(){
+            allowed_file_type.push($(this).val());
+        });
+
+        let allowed_methods = [];
+        $(`input:checkbox[name=allowed_methods]:checked`).each(function(){
+            allowed_methods.push($(this).val());
+        });
+
+        let data = {
+            name : $('[name=name]').val(),
+            owners: owners.toString(),
+            threshold: $('[name=threshold]').val(),
+            allowed_file_type: allowed_file_type.toString(),
+            allowed_methods: allowed_methods.toString(),
+        }
+        $.ajax({
+            url: `/api/v1/bucket/admin/${$('#bucket_name_title').text()}`,
+            headers: { access_token: $.cookie("access_token") },
+            method: "PATCH",
+            data,
+        })
+            .done(d => {
+                console.log("inside patch ", d)
+                if(d){
+                    swal({
+                        title: "Bucket Update",
+                        html: true,
+                        text: "Successfully updated Bucket",
+                        icon: "success",
+                    });
+                }        })
+            .fail(e => {
+
+                let error;
+                if(e.responseText) error = e.responseText
+                if(e.responseJSON) error = e.responseJSON
+
+                if(typeof error == "function") {
+                    error = error.map(e => {
+                        return `${e}`;
+                    }).join("<br><br>");
+                }
+                swal({
+                    title: "Bucket Update Failed",
+                    html: true,
+                    text: error,
+                    icon: "error",
+                });
+            });
+    }
+    let thresholdChart = (d)=>{
+        var pdata = [
+            {
+                value: (d.size_used / 1073741824).toFixed(2),
+                color: "#46BFBD",
+                highlight: "#5AD3D1",
+                label: "Used"
+            },
+            {
+                value: (d.threshold - (d.size_used / 1073741824)).toFixed(2),
+                color:"#F7464A",
+                highlight: "#FF5A5E",
+                label: "Remaining"
+            }
+        ]
+        var ctxp = $("#bucketThresholdStat").get(0).getContext("2d");
+        var pieChart = new Chart(ctxp).Pie(pdata);
+    }
+
+
+    let setTotalRequestBucket = (b)=>{
+        let total = 0;
+        let pdata = [];
+        let get = 0;
+        let post = 0;
+        let del = 0;
+
+        if(b.requests){
+            total = total + b.requests.get + b.requests.post + b.requests.delete;
+            get = b.requests.get;
+            post = b.requests.post;
+            del = b.requests.delete;
+        }
+
+        $('#total_request').html(total);
+
+        pdata.push({
+                value: get,
+                color:"#F7464A",
+                highlight: "#FF5A5E",
+                label: "get"
+            },
+            {
+                value: post,
+                color: "#46BFBD",
+                highlight: "#5AD3D1",
+                label: "post"
+            },
+            {
+                value: del,
+                color: "#FDB45C",
+                highlight: "#FFC870",
+                label: "delete"
+            })
+        var ctxd = $("#requestChartBucket").get(0).getContext("2d");
+        var doughnutChart = new Chart(ctxd).Doughnut(pdata);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="_layouts/head :: head">
+</head>
+<body class="app sidebar-mini rtl">
+<!-- Navbar-->
+<header th:replace="_layouts/header :: header">
+</header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:replace="_layouts/sidebar :: sidebar">
+</aside>
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h1><i class="fa fa-dashboard"></i> Tutorial</h1>
+            <p>Api Tutorial</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+            <li class="breadcrumb-item"><a href="#">Api'S</a></li>
+        </ul>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="tile">
+            <h3 class="tile-title">Node Server</h3>
+                <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #AA22FF; font-weight: bold">const</span> sdk <span style="color: #666666">=</span> (bucketName, key, filename)<span style="color: #666666">=&gt;</span>{
+  <span style="color: #AA22FF; font-weight: bold">return</span> <span style="color: #AA22FF; font-weight: bold">new</span> Promise((resolve, reject)<span style="color: #666666">=&gt;</span>{
+  <span style="color: #AA22FF; font-weight: bold">var</span> request <span style="color: #666666">=</span> require(<span style="color: #BB4444">&#39;request&#39;</span>);
+  request(<span style="border: 1px solid #FF0000">`</span>http<span style="color: #666666">:</span><span style="color: #008800; font-style: italic">//localhost/api/v1/file/url/</span><span style="color: #008800">${</span>bucketName<span style="color: #008800">}</span><span style="color: #008800; font-style: italic">/</span><span style="color: #008800">${</span>key<span style="color: #008800">}</span><span style="color: #008800; font-style: italic">/</span><span style="color: #008800">${</span>filename<span style="color: #008800">}</span><span style="color: #008800; font-style: italic">`,</span>
+ <span style="color: #AA22FF; font-weight: bold">function</span> (error, response, body) {
+   resolve(body);
+  });
+});
+
+}
+
+<span style="color: #AA22FF; font-weight: bold">let</span> bucketName <span style="color: #666666">=</span> <span style="color: #BB4444">&quot;bucket_name&quot;</span>;
+<span style="color: #AA22FF; font-weight: bold">let</span> key <span style="color: #666666">=</span> <span style="color: #BB4444">&quot;key"</span>;
+app.get(<span style="color: #BB4444">&quot;/url&quot;</span>, async (req, res, next)<span style="color: #666666">=&gt;</span>{
+  <span style="color: #AA22FF; font-weight: bold">let</span> filename <span style="color: #666666">=</span> uuid(); //filename should be unique every time
+  <span style="color: #AA22FF; font-weight: bold">let</span> body <span style="color: #666666">=</span> await sdk(bucketName, key, filename);
+  res.json(body);
+});
+</pre></div>
+
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="tile">
+            <h3 class="tile-title">Javascript Client</h3>
+
+            <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  <span style="color: #008000; font-weight: bold">&lt;form</span> <span style="color: #BB4444">id=&quot;test&quot;</span> <span style="color: #BB4444">method=&quot;POST&quot;</span> <span style="color: #BB4444">enctype=&quot;multipart/form-data&quot;</span><span style="color: #008000; font-weight: bold">&gt;</span>
+      <span style="color: #008000; font-weight: bold">&lt;input</span> <span style="color: #BB4444">type=&quot;file&quot;</span> <span style="color: #BB4444">id=&quot;filein&quot;</span> <span style="color: #BB4444">name=&quot;file&quot;</span> <span style="color: #BB4444">multiple</span> <span style="color: #008000; font-weight: bold">/&gt;</span>
+      <span style="color: #008000; font-weight: bold">&lt;button</span> <span style="color: #BB4444">type=&quot;submit&quot;</span><span style="color: #008000; font-weight: bold">&gt;</span>upload<span style="color: #008000; font-weight: bold">&lt;/button&gt;</span>
+    <span style="color: #008000; font-weight: bold">&lt;/form&gt;</span>
+  <span style="color: #008000; font-weight: bold">&lt;/body&gt;</span>
+  <span style="color: #008000; font-weight: bold">&lt;script </span><span style="color: #BB4444">src=&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js&quot;</span><span style="color: #008000; font-weight: bold">&gt;&lt;/script&gt;</span>
+  <span style="color: #008000; font-weight: bold">&lt;script&gt;</span>
+    $(<span style="color: #AA22FF">document</span>).ready(<span style="color: #AA22FF; font-weight: bold">function</span>() {
+      $(<span style="color: #BB4444">&quot;#filein&quot;</span>).on(<span style="color: #BB4444">&quot;change&quot;</span>, uploadFile);
+    });
+
+    <span style="color: #AA22FF; font-weight: bold">function</span> uploadFile() {
+      $.ajax({
+            url<span style="color: #666666">:</span><span style="color: #BB4444">&#39;/url&#39;</span>,
+            method<span style="color: #666666">:</span> <span style="color: #BB4444">&quot;GET&quot;</span>
+        }).done(d <span style="color: #666666">=&gt;</span> {
+        $.ajax({
+        url<span style="color: #666666">:</span> <span style="border: 1px solid #FF0000">`</span>http<span style="color: #666666">:</span><span style="color: #008800; font-style: italic">//localhost/file/${d}`,</span>
+        type<span style="color: #666666">:</span> <span style="color: #BB4444">&quot;POST&quot;</span>,
+        data<span style="color: #666666">:</span> <span style="color: #AA22FF; font-weight: bold">new</span> FormData($(<span style="color: #BB4444">&quot;#test&quot;</span>)[<span style="color: #666666">0</span>]),
+        enctype<span style="color: #666666">:</span> <span style="color: #BB4444">&quot;multipart/form-data&quot;</span>,
+        processData<span style="color: #666666">:</span> <span style="color: #AA22FF; font-weight: bold">false</span>,
+        contentType<span style="color: #666666">:</span> <span style="color: #AA22FF; font-weight: bold">false</span>,
+        cache<span style="color: #666666">:</span> <span style="color: #AA22FF; font-weight: bold">false</span>,
+        success<span style="color: #666666">:</span> <span style="color: #AA22FF; font-weight: bold">function</span>(d) {
+          alert(<span style="color: #BB4444">&quot;File succesfully uploaded&quot;</span>, d);
+        },
+        error<span style="color: #666666">:</span> <span style="color: #AA22FF; font-weight: bold">function</span>(e) {
+          <span style="color: #008800; font-style: italic">// Handle upload error</span>
+          alert(e.responseText);
+        }
+      });
+            })
+        .fail(e <span style="color: #666666">=&gt;</span> console.log(e));
+    }
+
+  <span style="color: #008000; font-weight: bold">&lt;/script&gt;</span>
+</pre></div>
+
+        </div>
+    </div>
+</div>
+
+</main>
+<!-- Essential javascripts for application to work-->
+<section th:replace="_layouts/bottom :: bottom"></section>
+</body>
+</html>
