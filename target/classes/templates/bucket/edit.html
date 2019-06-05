@@ -292,11 +292,27 @@
         let del = 0;
 
         if(b.requests){
-            total = total + b.requests.get + b.requests.post + b.requests.delete;
-            get = b.requests.get;
-            post = b.requests.post;
-            del = b.requests.delete;
+            $.ajax({
+                url: '/api/v1/request/bucket/'+b.id,
+                headers: { access_token: $.cookie("access_token") },
+                method: 'get',
+                async: false
+            }).done(data=>{
+                console.log("data is ",d);
+                for(var d of data) {
+                    let method = (d.method).toLowerCase();
+                    if (method == "get") {
+                        get++;
+                    } else if (method == "post") {
+                        post++;
+                    } else if (method == "delete") {
+                        del++;
+                    }
+                }
+            }).fail(e=>alert(e.responseText))
         }
+
+
 
         $('#total_request').html(total);
 
@@ -320,7 +336,9 @@
             })
         var ctxd = $("#requestChartBucket").get(0).getContext("2d");
         var doughnutChart = new Chart(ctxd).Doughnut(pdata);
+
     }
+
 
 </script>
 </body>

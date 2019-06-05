@@ -189,24 +189,29 @@ let setTotalRequest = (buckets)=>{
     for(var b of buckets){
 
         if(b.requests){
+
             $.ajax({
                 url: '/api/v1/request/bucket/'+b.id,
                 headers: { access_token: $.cookie("access_token") },
                 method: 'get',
-            }).done(d=>{
-                if(d.method == "get"){
-                 get++;
-                }else if(d.method == "post"){
-                  post++;
-                }else if(d.method == "delete"){
-                  del++;
+                async: false
+            }).done(data=>{
+                console.log("data is ",d);
+                for(var d of data) {
+                    let method = (d.method).toLowerCase();
+                    if (method == "get") {
+                        get++;
+                    } else if (method == "post") {
+                        post++;
+                    } else if (method == "delete") {
+                        del++;
+                    }
                 }
             }).fail(e=>alert(e.responseText))
         }
     }
 
-    console.log("methods ",(get, post, del))
-
+    total = get + post + del;
     pdata.push({
             value: get,
             color:"#F7464A",

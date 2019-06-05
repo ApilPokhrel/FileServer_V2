@@ -25,6 +25,7 @@ let upload = ()=>{
         },
         error: function(e) {
             // Handle upload error
+            console.log(e)
             alert(e.responseText);
         }
     });

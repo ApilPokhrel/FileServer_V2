@@ -36,12 +36,15 @@ public class Authenticate {
 
     }
 
-    public void AuthorizeUi() throws UnauthorizedUi {
+    public void AuthorizeUi() throws UnauthorizedUi, IOException {
             String token = webStorage.getToken(req, "access_token");
             UserSchema user = userDaoRepository.findByTokens(token);
             if (user == null) {
                 throw new UnauthorizedUi();
             } else {
+                if(!user.getVerified()){
+                   res.sendRedirect("/verification");
+                }
                 if(!user.getRole().getRole().equalsIgnoreCase("admin") && user.getStatus().equalsIgnoreCase("inactive")){
                     throw new UnauthorizedUi();
                 }
@@ -50,6 +53,10 @@ public class Authenticate {
 
     }
 
+    public UserSchema getUserLocal(){
+        String token = webStorage.getToken(req, "access_token");
+        return userDaoRepository.findByTokens(token);
+    }
 
 
 
@@ -104,7 +111,7 @@ public class Authenticate {
 
 
     public void isVerifiedApi() throws Exception {
-        boolean is_verified = this.getUser().getVerified();
+        boolean is_verified = getUser().getVerified();
         if(is_verified){
             res.setStatus(400);
             PrintWriter out = res.getWriter();
@@ -116,7 +123,7 @@ public class Authenticate {
     public void isVerifiedUi() throws Exception {
         boolean is_verified = false;
         try {
-             is_verified = this.getUser().getVerified();
+             is_verified = getUser().getVerified();
         }catch(Exception ex){
         }
         if(is_verified){

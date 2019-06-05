@@ -121,12 +121,13 @@ public class FileController {
 
         fileSchema.setUploadedAt(dateAndTime.isoTimeNow());
         fileSchema = fileInterface.create(fileSchema);
-
-        bucketInterface.addFile(bucketSchema, fileSchema);
-
         String uploadPath = variables.SERVER_FOLDER+bucketSchema.getName()+"/"+stat+"/"+fileName+"."+this.getFileType(file)[1];
         InputStream in = file.getInputStream();
+        System.out.println("input stream");
         Files.copy(in, Paths.get(uploadPath), StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("file upload");
+        bucketInterface.addFile(bucketSchema, fileSchema);
+
         bucketInterface.set_size_used(bucketSchema, (int) (bucketSchema.getSize_used()+file.getSize()));//in bytes
 
     }

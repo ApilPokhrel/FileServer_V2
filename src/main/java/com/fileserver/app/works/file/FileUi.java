@@ -67,9 +67,7 @@ public class FileUi {
             if(file.isEmpty()) {
                 return ResponseEntity.status(400).body("file not found");
             }
-//            planController.validatePlan(auth.getUser(),
-//                    "post", userController.getTotalSize(auth.getUser()),
-//                    userController.getTotalRequest(auth.getUser()));
+
             fileController.validateMethod(bucketSchema, "post");
             fileController.validateFileType(bucketSchema, fileController.getFileType(file)[0]);
             fileController.validateBucketThreshold(bucketSchema, file.getSize());
@@ -100,9 +98,7 @@ public class FileUi {
             if (bucketSchema == null) {
                 return ResponseEntity.status(400).body("bucket not found");
             }
-//            planController.validatePlan(auth.getUser(),
-//                    "post", userController.getTotalSize(auth.getUser()),
-//                    userController.getTotalRequest(auth.getUser()));
+
             for(MultipartFile file : files) {
                 fileController.validateMethod(bucketSchema, "post");
                 fileController.validateFileType(bucketSchema, fileController.getFileType(file)[0]);
@@ -124,7 +120,7 @@ public class FileUi {
                     @RequestParam(value = "download", required = false) String download,
                     HttpServletResponse response,
                     HttpServletRequest request) throws IOException {
-        BucketSchema bucketSchema = bucketInterface.findFile(bucketName, "file_id");
+        BucketSchema bucketSchema = bucketInterface.findFile(bucketName, fileName);
         if(bucketSchema == null){
             response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
             return;

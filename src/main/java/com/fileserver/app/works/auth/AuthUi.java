@@ -35,14 +35,19 @@ public class AuthUi {
 
     @RequestMapping(value = "/verification", method = RequestMethod.GET)
     public String verificationPage(Model model) throws Exception {
+        UserSchema user = null;
         try {
-            auth.AuthorizeUi();
+            user = auth.getUserLocal();
         }catch (Exception ex){
             return "redirect:/login";
         }
-            auth.isVerifiedUi();
-            model.addAttribute("user", auth.getUser());
-
+        if(user == null){
+            return "redirect:/login";
+        }
+        if(user.getVerified()){
+            return "redirect:/";
+        }
+        model.addAttribute("user", user);
         return "verification";
     }
 

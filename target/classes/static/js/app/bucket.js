@@ -364,12 +364,12 @@ $("#bucketListTable").DataTable({
             render: function (data) {
                 if(!data.status || (data.status == "active")){
                     return `
-                        <input type="checkbox" class="checkbox" id="status" checked name="status" value="active" onclick="changeBucketStatus('${data.name}', '${data.status}')">
+                        <input type="checkbox" class="checkbox" id="${data.id}" checked name="status" value="active" onclick="changeBucketStatus('${data.name}', '${data.id}')">
                      `;
                 }else{
 
                     return `
-                        <input type="checkbox" class="checkbox" id="status"  name="status" value="inactive" onclick="changeBucketStatus('${data.name}', '${data.status}')">
+                        <input type="checkbox" class="checkbox" id="${data.id}"  name="status" value="inactive" onclick="changeBucketStatus('${data.name}', '${data.id}')">
                         `;
                 }
             }
@@ -384,6 +384,53 @@ $("#bucketListTable").DataTable({
         }
     ]
 });
+
+
+let changeBucketStatus = (name, id)=>{
+    let status;
+
+
+    var checked = document.getElementById(id).checked;
+    if (checked) {
+        status = "active"
+    }else{
+        status = "inactive"
+    }
+
+    console.log(name, status)
+
+
+    $.ajax({
+        url: `/api/v1/bucket/?bucketName=${name}&updateField=status&updateValue=${status}&updateType=set`,
+        headers: {access_token: $.cookie("access_token")},
+        method: "patch",
+
+    })
+        .done(d => {
+            if (d) {
+                swal({
+                        title: "Bucket Status",
+                        html: true,
+                        text: "Successfully Updated Status",
+                        icon: "success",
+                    },
+                    function () {
+                        // window.location.href = "?"
+                    });
+            }
+        })
+        .fail(e => {
+            let error;
+            if (e.responseText) error = e.responseText
+            if (e.responseJSON) error = e.responseJSON
+            swal({
+                title: "Bucket Status Failed",
+                html: true,
+                text: error,
+                icon: "error",
+            });
+        });
+}
 
 let deleteFile = (bucketId, fileId)=>{
     if(confirm('Are you sure to delete')) {
@@ -449,11 +496,27 @@ let setTotalRequestBucket = (b)=>{
     let del = 0;
 
         if(b.requests){
-            total = total + b.requests.get + b.requests.post + b.requests.delete;
-            get = b.requests.get;
-            post = b.requests.post;
-            del = b.requests.delete;
-        }
+                $.ajax({
+                    url: '/api/v1/request/bucket/'+b.id,
+                    headers: { access_token: $.cookie("access_token") },
+                    method: 'get',
+                    async: false
+                }).done(data=>{
+                    console.log("data is ",d);
+                    for(var d of data) {
+                        let method = (d.method).toLowerCase();
+                        if (method == "get") {
+                            get++;
+                        } else if (method == "post") {
+                            post++;
+                        } else if (method == "delete") {
+                            del++;
+                        }
+                    }
+                }).fail(e=>alert(e.responseText))
+            }
+
+
 
     $('#total_request').html(total);
 
@@ -477,7 +540,9 @@ let setTotalRequestBucket = (b)=>{
         })
     var ctxd = $("#requestChartBucket").get(0).getContext("2d");
     var doughnutChart = new Chart(ctxd).Doughnut(pdata);
+
 }
+
 
 
 

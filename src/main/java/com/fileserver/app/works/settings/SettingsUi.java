@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
+
 @Controller
 @RequestMapping("/settings")
 public class SettingsUi {
@@ -24,7 +26,7 @@ public class SettingsUi {
     }
 
     @RequestMapping("/plan")
-    public String  plans() throws UnauthorizedUi {
+    public String  plans() throws UnauthorizedUi, IOException {
         auth.AuthorizeUi();
         return "settings/list_plan";
     }
